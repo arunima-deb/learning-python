@@ -1,12 +1,11 @@
 prompt = "Enter height of triangle : "
-# h = int(input(prompt))
-h = 7
-one = 1
-for row in range(h):
-    if( row == 0 ):
-        print( "  "*h, ".", "  ", sep='' )
-    else:
-        print( ("  "*(h-1), ".", " ."*(one+1)), sep='' )
-        h = h-1
-        
-        
+# side = int(input(prompt))
+side = 7
+
+for r in range(side):
+    num_starting_spaces = 0
+    num_X = r+1
+    num_ending_spaces = side - (r+1)
+    print( ' '*num_starting_spaces, ' X'*num_X, ' '*num_ending_spaces, sep='' )
+
+    
