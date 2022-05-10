@@ -1,5 +1,4 @@
-# This is the left triangle program
-
+print( "\n   Left Triangle\n" )
 prompt = "Enter height of triangle : "
 side = int(input( prompt ))
 print( '' )
