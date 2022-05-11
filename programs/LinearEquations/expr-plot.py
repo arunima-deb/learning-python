@@ -3,7 +3,7 @@
 
 import matplotlib.pyplot as plt
 
-expr = "x+2 = 16-x"
+expr = "x=2"
 parts = expr.split( '=' )
 lhExpr = parts[0].strip()
 rhExpr = parts[1].strip()
