@@ -1,3 +1,4 @@
+
 # Collect equation
 prompt1 = "Enter equation : "
 equation = input( prompt1 )
