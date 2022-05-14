@@ -16,6 +16,17 @@ smallNum = num2
 if num2 > num1:
     bigNum = num2
     smallNum = num1
+
+# Determine whether numbers are positive or negative
+if bigNum > 0:
+    bignumSign = "+"
+else:
+    bignumSign = "-"
+
+if smallNum > 0:
+    smallnumSign = "+"
+else:
+    smallnumSign = "-"
     
 # Create a list for digits in the smaller number
 digit_smallnum = [int(c) for c in str(smallNum)]
@@ -56,11 +67,8 @@ for item in allArr:
     if itemLen > maxLen:
         maxLen = itemLen
 
-# Printing the problem and its working
-print()
-i = 0
-for item in allArr:
-    print( '\t', item.rjust(maxLen) )
-    i += 1
-    if i == (len( allArr )-1) :
-        print( '\t', '_'*maxLen )
+# Test Print
+
+if '-' not in str(bigNum):
+    print( 'Answer = ' ,bignumSign , finalResult, sep='' )
+
