@@ -18,16 +18,14 @@ if num2 > num1:
     smallNum = num1
 
 # Determine whether numbers are positive or negative
+bignumSign = '-'
 if bigNum > 0:
-    bignumSign = "+"
-else:
-    bignumSign = "-"
+    bignumSign = ''
 
+smallnumSign = '-'
 if smallNum > 0:
-    smallnumSign = "+"
-else:
-    smallnumSign = "-"
-    
+    smallnumSign = ''
+
 # Create a list for digits in the smaller number
 digit_smallnum = [int(c) for c in str(smallNum)]
 digit_smallnum.reverse()
@@ -64,11 +62,21 @@ allArr.append( str(finalResult) )
 maxLen = 0
 for item in allArr:
     itemLen = len(item)
-    if itemLen > maxLen:
-        maxLen = itemLen
+    if len(str(itemLen)) > len(str(maxLen)):
+        maxLen = str(itemLen)
 
-# Test Print
+# Printing the problem and its working
+print()
+print( '\t', ' '*(maxLen-len(bigNum)), bigNum )
+print( '\t' )
 
+print('\n')
 if '-' not in str(bigNum):
-    print( 'Answer = ' ,bignumSign , finalResult, sep='' )
+    print( 'Answer = ', finalResult, sep='' )
+    
+if '-' in str(bigNum):
+    print( 'Answer = ', bignumSign, finalResult, sep='' )
 
+# 15/5/22
+# the way baba has printed the working won't work for negative numbers
+# change way of printing working
