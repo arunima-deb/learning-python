@@ -1,9 +1,11 @@
+prompt = "Enter two number multiplication sum : "
 # Print title
 print( "\n  Multiplication with working\n" )
 
 # Collect problem statement and extract the numbers
 prompt = "Enter multiplication sum : "
 multiplication = input(prompt)
+# multiplication = "45555x11111111111"
 numbers = multiplication.split( 'x' )
 
 num1 = int(numbers[0].strip())
@@ -17,31 +19,34 @@ if num2 > num1:
     bigNum = num2
     smallNum = num1
 
-# Determine whether numbers are positive or negative
-bignumSign = '-'
-if bigNum > 0:
-    bignumSign = ''
-
-smallnumSign = '-'
-if smallNum > 0:
-    smallnumSign = ''
-
+digit_bignum = [int(c) for c in str(bigNum)]
+    
 # Create a list for digits in the smaller number
 digit_smallnum = [int(c) for c in str(smallNum)]
 digit_smallnum.reverse()
 
+print()
+print( '  ', bigNum, sep='' )
+print( 'x ', ' '*(len(str(bigNum))-len(str(smallNum))), smallNum, sep='' )
+print( '_'*(len(str(bigNum))+2) )
+
 # Compute indivisual working values
 i = 0
+value_arr = []
 valueArr = []
 for digit in digit_smallnum:
-    
+    value = (bigNum*(digit_smallnum[i]))*(10**i)
+    value_arr.append( value )
+
     faceValue = digit_smallnum[i]
     placeValue= faceValue * (10**i)
     value = bigNum * placeValue
-    
+
     valueArr.append( value )
     i += 1
 
+for value in value_arr:
+    print( value )
 # Compute final result
 finalResult = bigNum*smallNum
 
@@ -52,31 +57,28 @@ allArr.append( "  " + str(bigNum) )
 allArr.append( "x " + str(smallNum).rjust( len(str(bigNum)) ) )
 allArr.append( "_" + "_"*len(str(bigNum)) )
 
+print( '_'*(len(str(bigNum))+2) )
+print( bigNum*smallNum )
 for value in valueArr:
     if value != 0:
         allArr.append( str(value) )
-    
+
 allArr.append( str(finalResult) )
 
 # Find length of largest string in allArr
 maxLen = 0
 for item in allArr:
     itemLen = len(item)
-    if len(str(itemLen)) > len(str(maxLen)):
-        maxLen = str(itemLen)
+    if itemLen > maxLen:
+        maxLen = itemLen
 
 # Printing the problem and its working
 print()
-print( '\t', ' '*(maxLen-len(bigNum)), bigNum )
-print( '\t' )
+i = 0
+for item in allArr:
+    print( '\t', item.rjust(maxLen) )
+    i += 1
+    if i == (len( allArr )-1) :
+        print( '\t', '_'*maxLen )
 
-print('\n')
-if '-' not in str(bigNum):
-    print( 'Answer = ', finalResult, sep='' )
-    
-if '-' in str(bigNum):
-    print( 'Answer = ', bignumSign, finalResult, sep='' )
-
-# 15/5/22
-# the way baba has printed the working won't work for negative numbers
-# change way of printing working
+print( allArr )        
