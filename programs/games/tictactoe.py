@@ -1,46 +1,69 @@
 import time
 
-row = [ ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', ' ', ' ', ]
-sep = [ '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', ]
-y = 1
+a1 = '[ ]'
+b1 = '[ ]'
+c1 = '[ ]'
+a2 = '[ ]'
+b2 = '[ ]'
+c2 = '[ ]'
+a3 = '[ ]'
+b3 = '[ ]'
+c3 = '[ ]'
 
-a1 = 'o'
-b1 = 'x'
-c1 = 'x'
-a2 = 'x'
-b2 = 'x'
-c2 = 'x'
-a3 = 'x'
-b3 = 'x'
-c3 = 'x'
 
-print('\n')
-print('\t      a   b   c')
-print()
-for x in range(2):
-    time.sleep(0.25)
-    print("\t", y, '\r     |', a1, '|   ', end="")
+def print_board():
+    print('\n')
+    print('\t      a   b   c')
     print()
-    time.sleep(0.25)
-    print("\t\r     ---+---+---", end="")
+    y = 1
+    print("\t", y, ' ', a1, b1, c1 )
     print()
     y = y+1
-
-print("\t", '3  ', "   |", a3, "|   ")
-print('\n')
-
-prompt = "Enter where you want to place X : "
-placetilehere = input(prompt)
-
-if placetilehere := a1:
-    a1 = 'x'
-    for x in range(2):
-        time.sleep(0.25)
-        print("\t", y, '\r     |', a1, '|   ', end="")
-        print()
-        time.sleep(0.25)
-        print("\t\r     ---+---+---", end="")
-        print("\t", '3  ', "   |", a3, "|   ")
-        y = y+1
+    print("\t", y, ' ', a2, b2, c2 )
+    print()
+    y = y+1
+    print("\t", y, ' ', a3, b3, c3 )
+    print()
+    y = y+1
+    prompt = "Enter where you want to place X : "
+    place_x_here = input(prompt)
 
     
+def check_win():
+    if a1 == '[X]':
+        if b2 == '[X]':
+            if c3 == '[X]':
+                print( 'X wins!' )
+                
+print_board()
+
+if 'a1' in str(place_x_here):
+    a1 = '[X]'
+    print_board()
+    
+if 'a1' not in str(place_x_here):
+    if 'a2' in str(place_x_here):
+        a2 = '[X]'
+        print_board()
+
+if 'a1' not in str(place_x_here):
+    if 'a3' in str(place_x_here):
+        a3 = '[X]'
+        print_board()
+
+if 'a1' not in str(place_x_here):
+    if 'b1' in str(place_x_here):
+        b1 = '[X]'
+        print_board()
+
+if 'a1' not in str(place_x_here):
+    if 'b2' in str(place_x_here):
+        b2 = '[X]'
+        print_board()
+
+if 'a1' not in str(place_x_here):
+    if 'b3' in str(place_x_here):
+        b3 = '[X]'
+        print_board()
+
+        
