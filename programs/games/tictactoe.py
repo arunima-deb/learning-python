@@ -36,7 +36,7 @@ def printBoard():
         rowNum += 1
         print( "\n", OFFSET, " +---+---+---+" )
 
-def getUserInput( player ):
+def getMove( player ):
     if player == 1:
         prompt = "\nEnter where you want to place X : "
     else:
@@ -69,7 +69,7 @@ def getBoardCoordinate( move ):
     coordinates = [colNum, rowNum]    
     return coordinates
 
-def updateBoard( coordinates, player ):
+def makeMove( player, coordinates ):
     rowNum = coordinates[1]
     colNum = coordinates[0]
     if player == 1:
@@ -77,19 +77,65 @@ def updateBoard( coordinates, player ):
     else:
         board[rowNum][colNum] = 2
 
-def checkWin( player ):
+def checkWinRow( player, rowNum ):
+    if board[rowNum][0] == player:
+        if board[rowNum][1] == player:
+            if board[rowNum][2] == player:
+                return True
+    return False
+
+def checkWinCol( player, colNum ):
+    if board[0][colNum] == player:
+        if board[1][colNum] == player:
+            if board[2][colNum] == player:
+                return True
+    return False
+
+def checkWinLeftDiagonal( player ):
+    return False
+
+
+def checkWinRightDiagonal( player ):
+    return False
+
+def checkWin( player, coordinates ):
 # return values:
 # Game still on = 0
 # X wins = 1
 # O wins = 2
 # Draw = 3
-    if board[0][0] == player:
-        if board[0][1] == player:
-            if board[0][2] == player:
-                if player == 1:
-                    print( 'X wins!!' )
-                else:
-                    print( 'O wins!!' )
+    rowNum = coordinates[1]
+    colNum = coordinates[0]
+
+    if checkWinRow( player, rowNum ):
+        if player == 1:
+            print( 'X wins!!' )
+        else:
+            print( 'O wins!!' )
+        return True
+    
+    elif checkWinCol( player, colNum):
+        if player ==1:
+            print( 'X wins!!' )
+        else:
+            print( 'O wins!!' )
+        return True
+    
+    if rowNum == colNum:
+        if checkWinLeftDiagonal( player ):
+            if player == 1:
+                print( 'X wins!!' )
+            else:
+                print( 'O wins!!' )
+            return True
+        
+    if (rowNum == 2 and colNum == 0) or (rowNum == 0 and colNum == 2):
+        if checkWinRightDiagonal( player ):
+            if player == 1:
+                print( 'X wins!!' )
+            else:
+                print( 'O wins!!' )           
+        
     
 def getCurrentPlayer( turn ):
     if turn%2 == 1:
@@ -102,10 +148,10 @@ def loopGame():
     while True:                
         printBoard()
         player = getCurrentPlayer( turn )
-        userInput = getUserInput( player )
-        coordinates = getBoardCoordinate( userInput )
-        updateBoard( coordinates, player )
-        checkWin( player )
+        userMove = getMove( player )
+        coordinates = getBoardCoordinate( userMove )
+        makeMove( player, coordinates )
+        checkWin( player, coordinates )
         turn += 1
 
 loopGame()
