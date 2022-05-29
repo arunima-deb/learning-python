@@ -5,7 +5,6 @@ print( "\n  Multiplication with working\n" )
 # Collect problem statement and extract the numbers
 prompt = "Enter multiplication sum : "
 multiplication = input(prompt)
-# multiplication = "45555x11111111111"
 numbers = multiplication.split( 'x' )
 
 num1 = int(numbers[0].strip())
