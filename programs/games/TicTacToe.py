@@ -10,7 +10,27 @@ board = [
 ]
 
 OFFSET = "   "
+PLAYER_X = 1
+PLAYER_O = 2
+EMPTY_CELL = 0
 
+GAME_DRAW = 3
+GAME_ON = 0
+GAME_X_WIN = PLAYER_X
+GAME_O_WIN = PLAYER_O
+
+
+# Prints the board in its current state
+#
+#        a   b   c
+#      +---+---+---+
+#    1 |   |   |   | 
+#      +---+---+---+
+#    2 |   |   |   | 
+#      +---+---+---+
+#    3 |   |   |   | 
+#      +---+---+---+
+#
 def printBoard():
     rowNum = 0
     print()
@@ -36,53 +56,56 @@ def printBoard():
         rowNum += 1
         print( "\n", OFFSET, " +---+---+---+" )
 
+# Based on the player, gets the move from the console
+# after displaying proper prompt
 def getMove( player ):
-    if player == 1:
+    if player == PLAYER_X:
         prompt = "\nEnter where you want to place X : "
-    else:
+    else: 
         prompt = "\nEnter where you want to place O : "
     move = input( prompt )
     return move
 
+
+# move is a 2-character string
+# first char = column (a, b, c)
+# second char = row (1, 2, 3)
 def getBoardCoordinate( move ):
-    # move is a 2-character string
-    # first char = column (a, b, c)
-    # second char = row (1, 2, 3)
     columnChar = move[0]
-    colNum = 999999
-    if columnChar == 'a':
-        colNum = 0
-    elif columnChar == 'b':
-        colNum = 1
-    elif columnChar == 'c':
-        colNum = 2
+    colNum = ord( columnChar ) - ord( 'a' )
         
     rowChar = move[1]
-    rowNum = 999999
-    if rowChar == '1':
-        rowNum = 0
-    elif rowChar == '2':
-        rowNum = 1
-    elif rowChar == '3':
-        rowNum = 2
+    rowNum = ord( rowChar ) - ord( '1' )
 
-    coordinates = [colNum, rowNum]    
+    coordinates = [colNum, rowNum]
+    if colNum < 0 or colNum > 2 or rowNum < 0 or rowNum > 2:
+        raise Exception( "Invalid move!" )
+        
     return coordinates
 
+# For the given player, marks the given coordinate with the
+# sign for the player.
+#
+# If the coordinate is already occupied, this function throws
+# a value error
 def makeMove( player, coordinates ):
     rowNum = coordinates[1]
     colNum = coordinates[0]
-    if player == 1:
-        board[rowNum][colNum] = 1
+    if board[rowNum][colNum] == EMPTY_CELL:
+        board[rowNum][colNum] = player
     else:
-        board[rowNum][colNum] = 2
+        raise Exception( "Board is already occupied!" )
 
+# Checks if the same player has occupied the entire given row
+# if entire row is occupied by same player, the function
+# returns True, else False
 def checkWinRow( player, rowNum ):
     if board[rowNum][0] == player:
         if board[rowNum][1] == player:
             if board[rowNum][2] == player:
                 return True
     return False
+
 
 def checkWinCol( player, colNum ):
     if board[0][colNum] == player:
@@ -105,93 +128,76 @@ def checkWinRightDiagonal( player ):
                 return True
     return False
 
+# returns true if there are no possible moves False otherwise
 def checkDraw():
-    # returns true if there are no possible moves
-    # False otherwise
-    if 0 in board[0]:
+    if EMPTY_CELL in board[0]:
         return False
-    
-    elif 0 in board[1]:
+    elif EMPTY_CELL in board[1]:
         return False
-
-    elif 0 in board[2]:
+    elif EMPTY_CELL in board[2]:
         return False
-
     else:
         return True
 
+#
+# Parameters:
+#   player -
+#   coordinate -
+#
+# Return values:
+# X wins = GAME_X_WIN
+# O wins = GAME_O_WIN
+# Draw   = GAME_DRAW
+# Game still on = GAME_ON
 def checkWin( player, coordinates ):
-# return values:
-# X wins = 1 [done]
-# O wins = 2 [done]
-# Draw = 3
-# Game still on = 0
     rowNum = coordinates[1]
     colNum = coordinates[0]
 
-    if checkWinRow( player, rowNum ):
-        if player == 1:
+    if ( checkWinRow( player, rowNum ) or
+         checkWinCol( player, colNum ) or
+         checkWinLeftDiagonal( player ) or
+         checkWinRightDiagonal( player ) ) :
+        
+        if player == PLAYER_X:
             print( '\nX wins!!' )
         else:
             print( '\nO wins!!' )
         
-        return player
-    
-    elif checkWinCol( player, colNum):
-        if player == 1:
-            print( '\nX wins!!' )
-        else:
-            print( '\nO wins!!' )
-
-        return player
-    
-    elif checkWinLeftDiagonal( player ):
-        if player == 1:
-            print( '\nX wins!!' )
-        else:
-            print( '\nO wins!!' )
-
-        return player
-        
-    elif checkWinRightDiagonal( player ):
-        if player == 1:
-            print( '\nX wins!!' )
-        else:
-            print( '\nO wins!!' )
-
         return player           
 
     elif checkDraw():
-        return 3
+        return GAME_DRAW
     
-    return 0
+    return GAME_ON
 
-
-    
- 
-    
+# Based on the turn, this function determines who the current player is
+# First move is always for cross
 def getCurrentPlayer( turn ):
     if turn%2 == 1:
         return 1
     else:
         return 2
-        
+
+# This is the main loop         
 def loopGame():
     turn = 1
     printBoard()
-    while True:                
-        player = getCurrentPlayer( turn )
-        userMove = getMove( player )
-        coordinates = getBoardCoordinate( userMove )
-        makeMove( player, coordinates )
-        printBoard()
-        winTrue = ( checkWin( player, coordinates ) )
-        if winTrue == player:
-            return
-        elif winTrue == 3:
-            print( 'Draw' )
-            return        
-        turn += 1
+    while True:
+        try:
+            player = getCurrentPlayer( turn )
+            userMove = getMove( player )
+            coordinates = getBoardCoordinate( userMove )
+            makeMove( player, coordinates )
+            printBoard()
+            winTrue = ( checkWin( player, coordinates ) )
+            if winTrue == player:
+                return
+            elif winTrue == 3:
+                print( 'Draw' )
+                return        
+            turn += 1
+        except Exception as e:
+            print( "\nError:", str( e ) )
         
 
 loopGame()
