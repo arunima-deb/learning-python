@@ -4,25 +4,17 @@ import random
 words = []
 selectedWord = 'Q'
 
-numUnderscore = []
 row4 = ( '|          ', '|        O' )
-row4range = 1
 row5 = ( '|          ', '|       /', '|       /|',
                 '|       /|\\' )
 row6 = ('|          ', '|       /', '|       / \\' )
-incorrectGuesses = 0
-guessesLeft = 6
-correctLetter = 'E'
-incorrectGuesses = 0
-correctGuesses = []
-usedLetters = []
-selectedWordArray = []
-for c in selectedWord:
-    selectedWordArray.append(c)
 
 selectedWordLetters = []
 blankIndicators = []
 currentWordState = []
+
+incorrectGuesses = 0
+correctGuesses = []
 
 
 # Loads a list of words from a text file. This function assumes
@@ -31,7 +23,7 @@ currentWordState = []
 def loadDictionary():
     global words
     
-    file = open( "HangmanWords.txt" )
+    file = open( "hangman-words.txt" )
     for line in file:
         word = line.strip()
         if( word=="" or len(word)==1 ):
@@ -57,9 +49,7 @@ def printBanner():
     print( '|_|  |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|     \_/ |_| (_)  \___/ ' )
     print( '                     __/ |                                              ' )
     print( '                    |___/                                               ' )
-    print( '\n\nWelcome to Hangman v1.0!\nEnter exit to abandon round and new to start a new round.' )
-
-printBanner()    
+    print( '\n\nWelcome to Hangman v1.0!\nEnter exit to abandon round and new to start a new round.' )  
 
 # Prints hangman in his current state
 # the rows that contain hangman's body are variables
@@ -80,6 +70,9 @@ def printHangman():
 
     print( '|        ' )
     print( '|_________________' )
+    print( '\n' )
+    
+    printCurrentWordState()
 
 # Creates a challenge from the selected word by
 # removing some or all alphabets
@@ -95,59 +88,61 @@ def createChallenge():
         blankIndicators.append( 0 )
         currentWordState.append( '_' )
 
-    print(selectedWordLetters)
-    print(blankIndicators)
-    print(currentWordState)
-
 def printCurrentWordState():
+    print( selectedWord )
     for index in range( 0, len(selectedWord) ):
         if blankIndicators[index] == 0:
             print( '[', currentWordState[index], ']', sep='', end=' ')
         else:
             print( currentWordState[index], end=' ')
 
+# This function receives the guessed letter and updates the
+# current word state if the guessed letter belongs to the selected
+# word.
+#
+# If a match is found, this function returns True, else False
+def processGuess( guess ):
+    global selectedWordLetters
+    global blankIndicators
+    global currentWordState
+
+    matchFound = False
+    
+    for i in range( len(selectedWordLetters) ):
+        if( blankIndicators[i] == 0 and
+            currentWordState[i] == '_' ):
+            if( selectedWordLetters[i] == guess ):
+                matchFound = True
+                currentWordState[i] = guess
+
+    return matchFound
+    
 def main():
-    global guessesLeft
     global incorrectGuesses
     global correctGuesses
-    global usedLetters
-    global selectedWordArray
-    global selectedWord
-
+    
     print( '\n\n' )
 
+    printBanner()
     loadDictionary()
     selectWord()
     createChallenge()
-    printCurrentWordState()
     
     while True:
         printHangman()
         prompt = '\n\n\n>> '
         guess = input(prompt)
-        if guess in usedLetters:
-            print( 'This letter was already used!' )
-        if len(guess) > 1:
-            print( 'Invalid' )
-            return
-        else:    
-            for c in selectedWord:
-                if c == guess:
-                    correctLetter = c
-                    correctGuesses.append(c)
-                    print( 'Correct!' )
-                    usedLetters.append(c)
-                
-        if guess not in selectedWord:
-            guessesLeft -= 1
+        result = processGuess( guess[0] )
+        if( result == False ):
             incorrectGuesses += 1
-            if guessesLeft > 0:
-                print( 'Sorry! You have', guessesLeft, 'guesses left.' )
-            else:
-                print( 'Sorry! You have', guessesLeft, 'guesses left.' )
-                print( 'man hanged...' )
-                printHangman()
-                return
+            print( 'Incorrect!', (6-incorrectGuesses), 'guesses left')
+        else:
+            print( 'Correct!' )
+            correctGuesses.append(guess)
 
+        if list(dict.fromkeys(selectedWordLetters)) == list(dict.fromkeys(correctGuesses)):
+            print( 'win' )
+            return
 
-main()
+        
+main();
