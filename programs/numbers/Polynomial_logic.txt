@@ -1,0 +1,4 @@
+Enter sum: 12ab + 2bc + 3c^2 + 3a^3b^2c + 5bc
+
+ = 3a^3b^2c + 3c^2 + 12ab + 7bc
+ = 3a^3b^2c + 3c^2 + 12ab + 7bc (Ans.)

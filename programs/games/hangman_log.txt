@@ -1,0 +1,6 @@
+>> recognize invalid guess
+	> double letter
+	> number
+>> if the same guess is repeated then it is not considered
+>> display instruction when F1 key pressed
+>> display loss

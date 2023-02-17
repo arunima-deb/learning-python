@@ -1,0 +1,4 @@
+1. - user inputs fraction x/y
+   - system separates it into numerator and denominator
+
+2. - mixed fraction logic
