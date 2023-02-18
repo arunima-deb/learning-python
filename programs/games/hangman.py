@@ -18,6 +18,11 @@
 #
 # * Displays incorrect guesses, and guesses remaining
 #
+# * Gamemodes: A different list of words is inputted for
+#   different modes. e.g. Animals, Countries, Historians
+#   
+# * Hint
+#
 # ------------------------------------------------------------
 
 import random
@@ -27,9 +32,8 @@ words = []
 selectedWord = 'Q'
 
 row4 = ( '|          ', '|        O' )
-row5 = ( '|          ', '|       /', '|       /|',
-                '|       /|\\' )
-row6 = ('|          ', '|       /', '|       / \\' )
+row5 = ( '|          ', '|       /', '|       /|', '|       /|\\' )
+row6 = ( '|          ', '|       /', '|       / \\' )
 
 selectedWordLetters = []
 blankIndicators = []
@@ -163,9 +167,7 @@ def processGuess( guess ):
 # A game is completed when:
 #     i) All blanks are filled
 #    ii) Number of incorrect guesses exceeds the maximum number of guesses
-
 def isGameOver():
-
     global blankIndicators
     global currentWordState
     global selectedWordLetters
@@ -196,7 +198,7 @@ def main():
     selectWord()
     createChallenge()
     
-    while !isGameOver():
+    while not isGameOver():
         printHangman()
         guess = input( '\n\n\n>> ' )
         processGuess( guess[0] )
