@@ -5,12 +5,18 @@
 # * [DONE] Print the hangman with the completed word after a
 #   win or a loss.
 #
-# * If a guess is entered, which has been previously entered
-#   let the user know and don't consider the guess
+# * [DONE] If a guess is entered, which has been previously
+#   entered let the user know and don't consider the guess
 #
 # * Have a difficultyLevel variable which determines the length
 #   of the chosen word and also unhides some letters at the
 #   start.
+#
+# * Entering 'new' starts a new game
+# 
+# * Entering 'exit' abandons current game
+#
+# * Displays incorrect guesses, and guesses remaining
 #
 # ------------------------------------------------------------
 
@@ -30,8 +36,8 @@ blankIndicators = []
 currentWordState = []
 
 numIncorrectGuesses = 0
+allGuesses = []
 correctGuesses = []
-
 
 # Loads a list of words from a text file. This function assumes
 # that each line of the file is a word. If a line is empty or
@@ -120,21 +126,36 @@ def printCurrentWordState():
 #
 # If a match is found, this function returns True, else False
 def processGuess( guess ):
-
     global selectedWordLetters
     global blankIndicators
     global currentWordState
+    global allGuesses
+    global numIncorrectGuesses
 
     matchFound = False
-    
-    for i in range( len(selectedWordLetters) ):
-        if( blankIndicators[i] == 0 and
-            currentWordState[i] == '_' ):
-            if( selectedWordLetters[i] == guess ):
-                matchFound = True
-                currentWordState[i] = guess
 
-    return matchFound
+    if guess in allGuesses:
+        print( guess, 'is already guessed. Try again.' )
+        print( (6-numIncorrectGuesses), 'guesses remaining.' )
+        return
+    else:
+        allGuesses.append(guess)
+        for i in range( len(selectedWordLetters) ):
+            if( blankIndicators[i] == 0 and
+                currentWordState[i] == '_' ):
+                if( selectedWordLetters[i] == guess ):
+                    matchFound = True
+                    currentWordState[i] = guess
+                    correctGuesses.append(guess)
+                    break
+                
+    if( matchFound == False ):
+        numIncorrectGuesses += 1
+        print( 'Incorrect!', (6-numIncorrectGuesses), 'guesses remaining.')
+    else:
+        print( 'Correct!' )
+        
+    return
 
 # Checks if the user's last move completed the game and if so, print the
 # appropriate ending message and return true, else return false.
@@ -143,7 +164,7 @@ def processGuess( guess ):
 #     i) All blanks are filled
 #    ii) Number of incorrect guesses exceeds the maximum number of guesses
 
-def checkLastMove():
+def isGameOver():
 
     global blankIndicators
     global currentWordState
@@ -167,10 +188,7 @@ def checkLastMove():
 
     return isLastMove                                 
     
-def main():
-    global numIncorrectGuesses
-    global correctGuesses
-    
+def main():    
     print( '\n\n' )
 
     printBanner()
@@ -178,21 +196,9 @@ def main():
     selectWord()
     createChallenge()
     
-    while True:
+    while !isGameOver():
         printHangman()
-        
-        prompt = '\n\n\n>> '
-        guess = input(prompt)
-        result = processGuess( guess[0] )
-        
-        if( result == False ):
-            numIncorrectGuesses += 1
-            print( 'Incorrect!', (6-numIncorrectGuesses), 'guesses left')
-        else:
-            print( 'Correct!' )
-            correctGuesses.append(guess)
-
-        if checkLastMove() == True:
-            return
+        guess = input( '\n\n\n>> ' )
+        processGuess( guess[0] )
         
 main();
