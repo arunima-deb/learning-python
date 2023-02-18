@@ -4,3 +4,9 @@
 >> if the same guess is repeated then it is not considered
 >> display instruction when F1 key pressed
 >> display loss
+>> display win
+>> Enter exit to abandon round and new to start a new round
+>> F3 for hint
+
+next version
+	> difficulty level

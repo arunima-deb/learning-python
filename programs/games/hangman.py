@@ -1,3 +1,19 @@
+# ----------------- Change log -------------------------------
+# * [DONE] On winning program should display the entire word
+#   in the blanks and say 'You win!'
+#
+# * [DONE] Print the hangman with the completed word after a
+#   win or a loss.
+#
+# * If a guess is entered, which has been previously entered
+#   let the user know and don't consider the guess
+#
+# * Have a difficultyLevel variable which determines the length
+#   of the chosen word and also unhides some letters at the
+#   start.
+#
+# ------------------------------------------------------------
+
 import random
 
 # Data/Variables
@@ -13,7 +29,7 @@ selectedWordLetters = []
 blankIndicators = []
 currentWordState = []
 
-incorrectGuesses = 0
+numIncorrectGuesses = 0
 correctGuesses = []
 
 
@@ -31,14 +47,13 @@ def loadDictionary():
         else:
             words.append( word )
 
+# Selects a word at random from the universal set of words.
 def selectWord():
     global selectedWord
     
     ranNum = int(random.randint(0, len(words)))
     selectedWord = words[ranNum]
-
-    
-        
+   
 # Prints banner and instructions
 def printBanner():
     print( ' _    _                                                  __        ___  ' )
@@ -63,7 +78,7 @@ def printHangman():
     print( '|        |' )
     print( '|        |' )
 
-    rowIndexList = rowIndexes[incorrectGuesses]
+    rowIndexList = rowIndexes[numIncorrectGuesses]
     print( row4[rowIndexList[0]] )
     print( row5[rowIndexList[1]] )
     print( row6[rowIndexList[2]] )
@@ -88,8 +103,11 @@ def createChallenge():
         blankIndicators.append( 0 )
         currentWordState.append( '_' )
 
+# Prints only the letters of the selected word in their respective places
+# according to the user's guesses. Correct guess are printed, while
+# pending guesses are shown in [ ]
 def printCurrentWordState():
-    print( selectedWord )
+    # print( selectedWord )
     for index in range( 0, len(selectedWord) ):
         if blankIndicators[index] == 0:
             print( '[', currentWordState[index], ']', sep='', end=' ')
@@ -102,6 +120,7 @@ def printCurrentWordState():
 #
 # If a match is found, this function returns True, else False
 def processGuess( guess ):
+
     global selectedWordLetters
     global blankIndicators
     global currentWordState
@@ -116,9 +135,40 @@ def processGuess( guess ):
                 currentWordState[i] = guess
 
     return matchFound
+
+# Checks if the user's last move completed the game and if so, print the
+# appropriate ending message and return true, else return false.
+#
+# A game is completed when:
+#     i) All blanks are filled
+#    ii) Number of incorrect guesses exceeds the maximum number of guesses
+
+def checkLastMove():
+
+    global blankIndicators
+    global currentWordState
+    global selectedWordLetters
+
+    isLastMove = False
+    
+    if len(set(correctGuesses)) == len(set(selectedWordLetters)):
+        printHangman()
+        print( "\n\nYou win!" )
+        # TODO: mention keys to exit, start new game, etc. etc.
+        isLastMove = True
+
+    if numIncorrectGuesses == 6:
+        print( "\n\nYou lose..." )
+        currentWordState = selectedWordLetters
+        for index in range( 0, len(blankIndicators) ):
+            blankIndicators[index] = 0
+        printHangman()
+        isLastMove = True
+
+    return isLastMove                                 
     
 def main():
-    global incorrectGuesses
+    global numIncorrectGuesses
     global correctGuesses
     
     print( '\n\n' )
@@ -130,19 +180,19 @@ def main():
     
     while True:
         printHangman()
+        
         prompt = '\n\n\n>> '
         guess = input(prompt)
         result = processGuess( guess[0] )
+        
         if( result == False ):
-            incorrectGuesses += 1
-            print( 'Incorrect!', (6-incorrectGuesses), 'guesses left')
+            numIncorrectGuesses += 1
+            print( 'Incorrect!', (6-numIncorrectGuesses), 'guesses left')
         else:
             print( 'Correct!' )
             correctGuesses.append(guess)
 
-        if list(dict.fromkeys(selectedWordLetters)) == list(dict.fromkeys(correctGuesses)):
-            print( 'win' )
+        if checkLastMove() == True:
             return
-
         
 main();
