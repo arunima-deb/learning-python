@@ -8,20 +8,28 @@
 # * [DONE] If a guess is entered, which has been previously
 #   entered let the user know and don't consider the guess
 #
-# * Have a difficultyLevel variable which determines the length
-#   of the chosen word and also unhides some letters at the
-#   start.
+# * [DONE] While the game is in progress, user can enter 'new'
+#   or 'exit' at the guess prompt to either start a new game
+#   or abandon the current game.
 #
-# * Entering 'new' starts a new game
-# 
-# * Entering 'exit' abandons current game
+# * [DONE] After game ends, a prompt should be displayed to
+#   either start a new game or exit the program. The default
+#   should be to exit.
+#       '>> (new | [exit]) :'
 #
-# * Displays incorrect guesses, and guesses remaining
+# * [DONE] Displays incorrect guesses, and guesses remaining
+#
+# * Difficulty level
+#     - [DONE] Gather user choice for difficulty level
+#     - Determines length of word chosen
+#     - Number of max hints
 #
 # * Gamemodes: A different list of words is inputted for
 #   different modes. e.g. Animals, Countries, Historians
 #   
-# * Hint
+# * Recognizes and declines invalid guesses.
+#    - Strings with more than one character
+#    - Non character input
 #
 # ------------------------------------------------------------
 
@@ -42,6 +50,33 @@ currentWordState = []
 numIncorrectGuesses = 0
 allGuesses = []
 correctGuesses = []
+incorrectGuesses = []
+abandonCurrentGame = False
+difficultyLevel = 2
+
+# Cleans the state of the current game, so that a new game can
+# have a clean start
+def cleanGameState():
+    global words
+    global selectedWordLetters
+    global currentWordState
+    global numIncorrectGuesses
+    global allGuesses
+    global correctGuesses
+    global abandonCurrentGame
+    global incorrectGuesses
+    global difficultyLevel
+
+    words = []
+    selectedWordLetters = []
+    blankIndicators = []
+    currentWordState = []
+    numIncorrectGuesses = 0
+    allGuesses = []
+    correctGuesses = []
+    incorrectGuesses = []
+    abandonCurrentGame = False
+    difficultyLevel = 2
 
 # Loads a list of words from a text file. This function assumes
 # that each line of the file is a word. If a line is empty or
@@ -74,7 +109,8 @@ def printBanner():
     print( '|_|  |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|     \_/ |_| (_)  \___/ ' )
     print( '                     __/ |                                              ' )
     print( '                    |___/                                               ' )
-    print( '\n\nWelcome to Hangman v1.0!\nEnter exit to abandon round and new to start a new round.' )  
+    print( '\n\nWelcome to Hangman v1.0!                                            ' )
+    print( '* Enter exit to abandon round and new to start a new round.             ' )
 
 # Prints hangman in his current state
 # the rows that contain hangman's body are variables
@@ -98,6 +134,9 @@ def printHangman():
     print( '\n' )
     
     printCurrentWordState()
+
+    if numIncorrectGuesses > 0:
+        print( '\n\n\nIncorrect guesses :', incorrectGuesses )
 
 # Creates a challenge from the selected word by
 # removing some or all alphabets
@@ -135,6 +174,7 @@ def processGuess( guess ):
     global currentWordState
     global allGuesses
     global numIncorrectGuesses
+    global incorrectGuesses
 
     matchFound = False
 
@@ -155,6 +195,7 @@ def processGuess( guess ):
                 
     if( matchFound == False ):
         numIncorrectGuesses += 1
+        incorrectGuesses.append(guess)
         print( 'Incorrect!', (6-numIncorrectGuesses), 'guesses remaining.')
     else:
         print( 'Correct!' )
@@ -171,6 +212,10 @@ def isGameOver():
     global blankIndicators
     global currentWordState
     global selectedWordLetters
+    global abandonCurrentGame
+
+    if abandonCurrentGame == True:
+        return True
 
     isLastMove = False
     
@@ -188,19 +233,56 @@ def isGameOver():
         printHangman()
         isLastMove = True
 
-    return isLastMove                                 
+    return isLastMove
+
+# Collects difficulty level, game mode and other data
+def getGameConfig():
+    global difficultyLevel
+
+    while True:
+        prompt = "Enter a difficulty level ( 1/[2]/3 ) : "
+        userInput = input( prompt )
+
+        if( userInput != "" and not userInput.isdigit() ):
+             print( "  Please enter a valid difficulty level" )
+        else:
+            difficultyLevel = 2 if userInput == "" else int(userInput)
+            if userInput == '':
+                print( "  Setting difficulty level to default [2]." )
+            if difficultyLevel >= 1 and difficultyLevel <=3:
+                break
+            else:
+                print( "  Please enter a valid difficulty level" )
     
-def main():    
+def main():
+    global abandonCurrentGame
+    
     print( '\n\n' )
 
+    cleanGameState() 
     printBanner()
+    getGameConfig()
     loadDictionary()
     selectWord()
     createChallenge()
     
     while not isGameOver():
         printHangman()
-        guess = input( '\n\n\n>> ' )
-        processGuess( guess[0] )
+        guess = input( '\n\n>> ' )
+
+        if guess == 'exit':
+            print( '\nGame abandoned' )
+            abandonCurrentGame = True
+        elif guess == 'new':
+            main()
+            return
+        else:
+            processGuess( guess[0] )
+
+    guess = input( '>> (new \ [exit]) : ' )
+    if guess == 'new':
+        main()
+    else:
+        return
         
 main();
