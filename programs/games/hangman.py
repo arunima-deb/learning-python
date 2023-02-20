@@ -19,18 +19,20 @@
 #
 # * [DONE] Displays incorrect guesses, and guesses remaining
 #
-# * Difficulty level
-#     - [DONE] Gather user choice for difficulty level
-#     - Determines length of word chosen
-#     - Number of max hints
-#
-# * Gamemodes: A different list of words is inputted for
-#   different modes. e.g. Animals, Countries, Historians
-#   
-# * Recognizes and declines invalid guesses.
+# * [DONE] Recognizes and declines invalid guesses.
 #    - Strings with more than one character
 #    - Non character input
 #
+# * Difficulty level
+#     - [DONE] Gather user choice for difficulty level
+#     - [DONE] Determines length of word chosen
+#     - Number of max hints
+#
+# version 2.0 changes
+# ------------------------------------------------------------
+# * Gamemodes: A different list of words is inputted for
+#   different modes. e.g. Animals, Countries, Historians
+#   
 # ------------------------------------------------------------
 
 import random
@@ -95,10 +97,19 @@ def loadDictionary():
 # Selects a word at random from the universal set of words.
 def selectWord():
     global selectedWord
-    
-    ranNum = int(random.randint(0, len(words)))
-    selectedWord = words[ranNum]
-   
+
+    while True:
+        ranNum = int(random.randint(0, len(words)))
+        selectedWord = words[ranNum]
+        selWordLen = len( selectedWord )
+
+        if difficultyLevel == 1 and selWordLen <= 5:
+            break
+        elif difficultyLevel == 2 and selWordLen < 8:
+            break
+        elif difficultyLevel == 3 and selWordLen >= 8:
+            break
+            
 # Prints banner and instructions
 def printBanner():
     print( ' _    _                                                  __        ___  ' )
@@ -177,7 +188,7 @@ def processGuess( guess ):
     global incorrectGuesses
 
     matchFound = False
-
+    
     if guess in allGuesses:
         print( guess, 'is already guessed. Try again.' )
         print( (6-numIncorrectGuesses), 'guesses remaining.' )
@@ -191,7 +202,6 @@ def processGuess( guess ):
                     matchFound = True
                     currentWordState[i] = guess
                     correctGuesses.append(guess)
-                    break
                 
     if( matchFound == False ):
         numIncorrectGuesses += 1
@@ -275,7 +285,9 @@ def main():
             abandonCurrentGame = True
         elif guess == 'new':
             main()
-            return
+            return            
+        elif len( guess ) != 1 or guess.isdigit():
+            print( 'Please enter a valid guess.' )
         else:
             processGuess( guess[0] )
 
