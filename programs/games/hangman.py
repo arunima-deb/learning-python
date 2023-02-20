@@ -28,14 +28,38 @@
 #     - [DONE] Determines length of word chosen
 #     - Number of max hints
 #
+# - User - types 'hint' on the prompt
+# - System - checks whether user has available hints
+#          - if not then it informs user
+#          - else chooses a random letter that is still unguessed
+#            and enters it on user's behalf
+#
+# >> variables: numHints = varies on difficultyLevel
+#              numHintsUsed = Hints used
+#              numHintsRemaining = numHints - numHintsUsed
+#              availableHints = letters in selectedWord that can be revealed as hints
+#              global hint
+# - if numGuessesRemaining == 0:
+# - print( "You have already used all your hints!" )
+# - else:
+# - for c in availableHints:
+# - if c is not in correctGuesses
+# - avaiableHints.append(c)
+#
+# - hint = int(random.randint(0, len(availableHints))
+# - guess = hint
+# - enter guess on user's behalf
+#
 # version 2.0 changes
 # ------------------------------------------------------------
 # * Gamemodes: A different list of words is inputted for
 #   different modes. e.g. Animals, Countries, Historians
 #   
+#
 # ------------------------------------------------------------
 
 import random
+import math
 
 # Data/Variables
 words = []
@@ -56,6 +80,8 @@ incorrectGuesses = []
 abandonCurrentGame = False
 difficultyLevel = 2
 
+numHints = 0
+
 # Cleans the state of the current game, so that a new game can
 # have a clean start
 def cleanGameState():
@@ -68,6 +94,7 @@ def cleanGameState():
     global abandonCurrentGame
     global incorrectGuesses
     global difficultyLevel
+    global numHints
 
     words = []
     selectedWordLetters = []
@@ -79,6 +106,7 @@ def cleanGameState():
     incorrectGuesses = []
     abandonCurrentGame = False
     difficultyLevel = 2
+    numHints = 0
 
 # Loads a list of words from a text file. This function assumes
 # that each line of the file is a word. If a line is empty or
@@ -108,7 +136,7 @@ def selectWord():
         elif difficultyLevel == 2 and selWordLen < 8:
             break
         elif difficultyLevel == 3 and selWordLen >= 8:
-            break
+            break        
             
 # Prints banner and instructions
 def printBanner():
@@ -263,9 +291,25 @@ def getGameConfig():
                 break
             else:
                 print( "  Please enter a valid difficulty level" )
+
+def determineNumHints():
+    global numHints
+
+    hintPct = 0.5
+    match difficultyLevel:
+        case 1:
+            hintPct = 1/2
+        case 2:
+            hintPct = 1/3
+        case 3:
+            hintPct = 1/4
+
+    numHints = math.ceil( hintPct * len(selectedWord) )
+    print( "\nNumber of hints = ", numHints )    
     
 def main():
     global abandonCurrentGame
+    global numHints
     
     print( '\n\n' )
 
@@ -275,6 +319,7 @@ def main():
     loadDictionary()
     selectWord()
     createChallenge()
+    determineNumHints()
     
     while not isGameOver():
         printHangman()
@@ -285,7 +330,15 @@ def main():
             abandonCurrentGame = True
         elif guess == 'new':
             main()
-            return            
+            return
+        elif guess == 'hint':
+            numHints -= 1
+            if numHints > 0:
+                print( "\nNumber of hints remaining = ", (numHints) )
+            elif numHints == 0:
+                print( "\nNumber of hints remaining = ", (numHints) )
+            elif numHints < 0:
+                print( "\nUser has exhausted their supply of hints!" )
         elif len( guess ) != 1 or guess.isdigit():
             print( 'Please enter a valid guess.' )
         else:
