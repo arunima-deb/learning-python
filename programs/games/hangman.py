@@ -23,32 +23,10 @@
 #    - Strings with more than one character
 #    - Non character input
 #
-# * Difficulty level
+# * [DONE] Difficulty level
 #     - [DONE] Gather user choice for difficulty level
 #     - [DONE] Determines length of word chosen
-#     - Number of max hints
-#
-# - User - types 'hint' on the prompt
-# - System - checks whether user has available hints
-#          - if not then it informs user
-#          - else chooses a random letter that is still unguessed
-#            and enters it on user's behalf
-#
-# >> variables: numHints = varies on difficultyLevel
-#              numHintsUsed = Hints used
-#              numHintsRemaining = numHints - numHintsUsed
-#              availableHints = letters in selectedWord that can be revealed as hints
-#              global hint
-# - if numGuessesRemaining == 0:
-# - print( "You have already used all your hints!" )
-# - else:
-# - for c in availableHints:
-# - if c is not in correctGuesses
-# - avaiableHints.append(c)
-#
-# - hint = int(random.randint(0, len(availableHints))
-# - guess = hint
-# - enter guess on user's behalf
+#     - [DONE] Number of max hints
 #
 # version 2.0 changes
 # ------------------------------------------------------------
@@ -80,7 +58,7 @@ incorrectGuesses = []
 abandonCurrentGame = False
 difficultyLevel = 2
 
-numHints = 0
+numHintsLeft = 0
 
 # Cleans the state of the current game, so that a new game can
 # have a clean start
@@ -94,7 +72,7 @@ def cleanGameState():
     global abandonCurrentGame
     global incorrectGuesses
     global difficultyLevel
-    global numHints
+    global numHintsLeft
 
     words = []
     selectedWordLetters = []
@@ -106,7 +84,7 @@ def cleanGameState():
     incorrectGuesses = []
     abandonCurrentGame = False
     difficultyLevel = 2
-    numHints = 0
+    numHintsLeft = 0
 
 # Loads a list of words from a text file. This function assumes
 # that each line of the file is a word. If a line is empty or
@@ -173,9 +151,13 @@ def printHangman():
     print( '\n' )
     
     printCurrentWordState()
+    if numHintsLeft > 0:
+        print( "\n\nNumber of hints =", numHintsLeft )
+    else:
+        print( '' )
 
     if numIncorrectGuesses > 0:
-        print( '\n\n\nIncorrect guesses :', incorrectGuesses )
+        print( '\nIncorrect guesses :', incorrectGuesses )
 
 # Creates a challenge from the selected word by
 # removing some or all alphabets
@@ -207,7 +189,7 @@ def printCurrentWordState():
 # word.
 #
 # If a match is found, this function returns True, else False
-def processGuess( guess ):
+def processGuess( guess, humanGuess ):
     global selectedWordLetters
     global blankIndicators
     global currentWordState
@@ -235,7 +217,7 @@ def processGuess( guess ):
         numIncorrectGuesses += 1
         incorrectGuesses.append(guess)
         print( 'Incorrect!', (6-numIncorrectGuesses), 'guesses remaining.')
-    else:
+    elif humanGuess:
         print( 'Correct!' )
         
     return
@@ -292,24 +274,40 @@ def getGameConfig():
             else:
                 print( "  Please enter a valid difficulty level" )
 
+# Determines number of hints according to difficulty level
 def determineNumHints():
-    global numHints
+    global numHintsLeft
 
     hintPct = 0.5
     match difficultyLevel:
         case 1:
-            hintPct = 1/2
+            hintPct = 0.2
         case 2:
-            hintPct = 1/3
+            hintPct = 0.25
         case 3:
-            hintPct = 1/4
+            hintPct = 0.3
 
-    numHints = math.ceil( hintPct * len(selectedWord) )
-    print( "\nNumber of hints = ", numHints )    
-    
+    numHintsLeft = math.ceil( hintPct * len(selectedWord) )
+
+# Returns a random character from the set of characters of the
+# selected word, which have not been input by the user yet
+def pickHint():
+    global selectedWordLetters
+    global correctGuesses
+    remainingGuesses = []
+
+    for c in selectedWordLetters:
+        if c not in correctGuesses and c not in remainingGuesses:
+            remainingGuesses.append( c )
+      
+    ranNum = random.randint(0, len(remainingGuesses)-1)
+    guess = remainingGuesses[ranNum]
+ 
+    return str(guess)
+            
 def main():
     global abandonCurrentGame
-    global numHints
+    global numHintsLeft
     
     print( '\n\n' )
 
@@ -320,11 +318,12 @@ def main():
     selectWord()
     createChallenge()
     determineNumHints()
-    
+  
     while not isGameOver():
         printHangman()
-        guess = input( '\n\n>> ' )
-
+        guess = input( '\n\n>> ' )       
+        humanGuess = True
+        
         if guess == 'exit':
             print( '\nGame abandoned' )
             abandonCurrentGame = True
@@ -332,17 +331,19 @@ def main():
             main()
             return
         elif guess == 'hint':
-            numHints -= 1
-            if numHints > 0:
-                print( "\nNumber of hints remaining = ", (numHints) )
-            elif numHints == 0:
-                print( "\nNumber of hints remaining = ", (numHints) )
-            elif numHints < 0:
+            if numHintsLeft <= 0:
                 print( "\nUser has exhausted their supply of hints!" )
-        elif len( guess ) != 1 or guess.isdigit():
+                continue
+            else:
+                numHintsLeft -= 1
+                guess = pickHint()
+                humanGuess = False
+                print( "\nHint =", guess, ". Number of hints remaining = ", numHintsLeft )
+
+        if len( guess ) != 1 or guess.isdigit():
             print( 'Please enter a valid guess.' )
         else:
-            processGuess( guess[0] )
+            processGuess( guess[0], humanGuess )
 
     guess = input( '>> (new \ [exit]) : ' )
     if guess == 'new':
@@ -350,4 +351,4 @@ def main():
     else:
         return
         
-main();
+main()
