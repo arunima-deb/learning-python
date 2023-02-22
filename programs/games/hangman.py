@@ -32,7 +32,11 @@
 # ------------------------------------------------------------
 # * Gamemodes: A different list of words is inputted for
 #   different modes. e.g. Animals, Countries, Historians
-#   
+#
+# * Every game in difficulty level 1 and 2 should provide
+#   one letter revealed by default
+#
+# * Meaning of the word should be revealed at the end
 #
 # ------------------------------------------------------------
 
