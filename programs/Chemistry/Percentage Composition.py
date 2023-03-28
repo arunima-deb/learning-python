@@ -13,7 +13,7 @@ atomicNum = int(input("Enter atomic number : "))
 
 # Collects RAM of elements 1-30
 def getAtomicMass():
-    for i in range(1, 31):
+    for i in range(1, 21):
         if i == 1:
             atomicMasses.append(int(1))
         elif i == 4:
